@@ -13,23 +13,17 @@ import { checkBirthdays } from './services/birthdayService.js';
 import { checkGiveaways } from './services/giveawayService.js';
 import { loadCommands, registerCommands as registerSlashCommands } from './handlers/commandLoader.js';
 
-class Aquatic SMP Helper extends Client {
+class AquaticSMPHelper extends Client {
   constructor() {
     super({
       intents: [
-        
-        GatewayIntentBits.Guilds,                        
-        GatewayIntentBits.GuildMembers,                 
-        
-        
-        GatewayIntentBits.GuildMessages,                
-        GatewayIntentBits.GuildMessageReactions,        
-        GatewayIntentBits.MessageContent,               
-        
-        GatewayIntentBits.GuildVoiceStates,             
-        
-        
-        GatewayIntentBits.GuildBans,                    
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.GuildMessageReactions,
+        GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildVoiceStates,
+        GatewayIntentBits.GuildBans,
       ],
     });
 
@@ -46,7 +40,8 @@ class Aquatic SMP Helper extends Client {
 
   async start() {
     try {
-      startupLog('Starting Aquatic SMP Helper...');
+      startupLog('Starting AquaticSMPHelper...');
+
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       startupLog('Initializing database...');
@@ -356,7 +351,7 @@ class Aquatic SMP Helper extends Client {
 }
 
 try {
-  const bot = new Aquatic SMP Helper();
+  const bot = new AquaticSMPHelper();
   
   const setupShutdown = () => {
     process.on('SIGTERM', () => bot.shutdown('SIGTERM'));
@@ -380,7 +375,7 @@ try {
   process.exit(1);
 }
 
-export default Aquatic SMP Helper;
+export default AquaticSMPHelper;
 
 
 

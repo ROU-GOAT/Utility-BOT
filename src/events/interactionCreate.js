@@ -9,6 +9,7 @@ import { InteractionHelper } from '../utils/interactionHelper.js';
 import { createInteractionTraceContext, runWithTraceContext } from '../utils/traceContext.js';
 import { validateChatInputPayloadOrThrow } from '../utils/commandInputValidation.js';
 import { enforceAbuseProtection, formatCooldownDuration } from '../utils/abuseProtection.js';
+import { commandRegistry } from '../handlers/commandRegistry.js';
 
 function withTraceContext(context = {}, traceContext = {}) {
   return {
@@ -46,7 +47,7 @@ export default {
               commandName: interaction.commandName
             }, interactionTraceContext));
 
-            const command = client.commands.get(interaction.commandName);
+            const command = commandRegistry.get(interaction.commandName);
 
             if (!command) {
               throw createError(

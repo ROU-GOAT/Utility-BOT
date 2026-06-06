@@ -2,6 +2,7 @@ import { Events } from "discord.js";
 import { logger, startupLog } from "../utils/logger.js";
 import config from "../config/application.js";
 import { reconcileReactionRoleMessages } from "../services/reactionRoleService.js";
+import { commandRegistry } from "../handlers/commandRegistry.js";
 
 export default {
   name: Events.ClientReady,
@@ -13,7 +14,7 @@ export default {
 
       startupLog(`Ready! Logged in as ${client.user.tag}`);
       startupLog(`Serving ${client.guilds.cache.size} guild(s)`);
-      startupLog(`Loaded ${client.commands.size} commands`);
+      startupLog(`Loaded ${commandRegistry.size} commands`);
 
       const reconciliationSummary = await reconcileReactionRoleMessages(client);
       startupLog(

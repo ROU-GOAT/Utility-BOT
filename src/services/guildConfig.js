@@ -2,6 +2,7 @@ import { getGuildConfig as getGuildConfigDb, setGuildConfig as setGuildConfigDb 
 import { BotConfig } from '../config/bot.js';
 import { normalizeGuildConfig, validateGuildConfigOrThrow } from '../utils/schemas.js';
 import { wrapServiceBoundary } from '../utils/serviceErrorBoundary.js';
+import { configCache } from '../utils/configCache.js';
 
 const GUILD_CONFIG_DEFAULTS = {
     prefix: BotConfig.prefix,
@@ -20,16 +21,15 @@ const GUILD_CONFIG_DEFAULTS = {
     }
 };
 
-
-
-
-
-
-
 export const getGuildConfig = wrapServiceBoundary(async function getGuildConfig(client, guildId, context = {}) {
-    const config = await getGuildConfigDb(client, guildId, context);
+    const cached = configCache.get(guildId);
+    if (cached) return cached;
 
-    return normalizeGuildConfig(config, GUILD_CONFIG_DEFAULTS);
+    const config = await getGuildConfigDb(client, guildId, context);
+    const normalized = normalizeGuildConfig(config, GUILD_CONFIG_DEFAULTS);
+
+    configCache.set(guildId, normalized);
+    return normalized;
 }, {
     service: 'guildConfigService',
     operation: 'getGuildConfig',
@@ -37,17 +37,13 @@ export const getGuildConfig = wrapServiceBoundary(async function getGuildConfig(
     userMessage: 'Failed to load server configuration. Please try again.'
 });
 
-
-
-
-
-
-
-
 export const setGuildConfig = wrapServiceBoundary(async function setGuildConfig(client, guildId, config, context = {}) {
     const normalized = normalizeGuildConfig(config, GUILD_CONFIG_DEFAULTS);
     const validated = validateGuildConfigOrThrow(normalized, { guildId, ...context });
-    return await setGuildConfigDb(client, guildId, validated, context);
+    const result = await setGuildConfigDb(client, guildId, validated, context);
+
+    configCache.set(guildId, validated);
+    return result;
 }, {
     service: 'guildConfigService',
     operation: 'setGuildConfig',
@@ -55,25 +51,22 @@ export const setGuildConfig = wrapServiceBoundary(async function setGuildConfig(
     userMessage: 'Failed to save server configuration. Please try again.'
 });
 
-
-
-
-
-
-
-
 export const updateGuildConfig = wrapServiceBoundary(async function updateGuildConfig(client, guildId, updates, context = {}) {
-    const currentConfig = await getGuildConfigDb(client, guildId, context);
+    const currentConfig = await getGuildConfig(client, guildId, context);
     const newConfig = { ...currentConfig, ...updates };
     const normalized = normalizeGuildConfig(newConfig, GUILD_CONFIG_DEFAULTS);
     const validated = validateGuildConfigOrThrow(normalized, { guildId, ...context });
-    return await setGuildConfigDb(client, guildId, validated, context);
+    const result = await setGuildConfigDb(client, guildId, validated, context);
+
+    configCache.set(guildId, validated);
+    return result;
 }, {
     service: 'guildConfigService',
     operation: 'updateGuildConfig',
     message: 'Failed to update guild configuration',
     userMessage: 'Failed to update server configuration. Please try again.'
 });
+
 
 
 

@@ -2,6 +2,7 @@ import { readdir, stat } from 'fs/promises';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { logger } from '../utils/logger.js';
+import { commandRegistry } from './commandRegistry.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -34,7 +35,7 @@ export default async (client) => {
           continue;
         }
         
-        client.commands.set(command.data.name, command);
+        commandRegistry.register(command);
         loadedCount++;
         logger.debug(`Loaded command: ${command.data.name}`);
       } catch (error) {

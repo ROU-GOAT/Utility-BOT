@@ -1,8 +1,8 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
-import { Collection } from 'discord.js';
 import { logger } from '../utils/logger.js';
+import { commandRegistry } from './commandRegistry.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -65,7 +65,6 @@ async function getAllFiles(directory, fileList = []) {
 
 
 export async function loadCommands(client) {
-    client.commands = new Collection();
     const commandsPath = path.join(__dirname, '../commands');
     const commandFiles = await getAllFiles(commandsPath);
     
@@ -77,7 +76,6 @@ export async function loadCommands(client) {
         try {
             const normalizedPath = filePath.replace(/\\/g, '/');
             
-            const commandName = path.basename(filePath, '.js');
             const commandDir = path.dirname(filePath);
             const category = path.basename(commandDir);
             
@@ -97,7 +95,7 @@ export async function loadCommands(client) {
             if (!uniqueCommandNames.has(primaryCommandName)) {
                 uniqueCommandNames.add(primaryCommandName);
                 
-                client.commands.set(primaryCommandName, command);
+                commandRegistry.register(command);
             }
             
             const subcommands = getSubcommandInfo(command.data.toJSON());
@@ -113,7 +111,7 @@ export async function loadCommands(client) {
         }
     }
     
-    const commandsWithSubcommands = Array.from(client.commands.values()).filter(cmd => {
+    const commandsWithSubcommands = commandRegistry.getAll().filter(cmd => {
         const subcommands = getSubcommandInfo(cmd.data.toJSON());
         return subcommands.length > 0;
     });
@@ -122,15 +120,8 @@ export async function loadCommands(client) {
         return total + getSubcommandInfo(cmd.data.toJSON()).length;
     }, 0);
     
-    const uniqueCommands = new Set();
-    for (const [name, command] of client.commands.entries()) {
-        if (command.data && command.data.name) {
-            uniqueCommands.add(command.data.name);
-        }
-    }
-    
-    logger.info(`Loaded ${uniqueCommands.size} commands`);
-    return client.commands;
+    logger.info(`Loaded ${commandRegistry.size} commands`);
+    return commandRegistry;
 }
 
 
@@ -145,7 +136,7 @@ export async function registerCommands(client, guildId) {
         let totalSubcommands = 0;
 const registeredNames = new Set();
         
-        for (const command of client.commands.values()) {
+        for (const command of commandRegistry.getAll()) {
             if (command.data && typeof command.data.toJSON === 'function') {
                 const commandName = command.data.name;
                 
@@ -303,7 +294,7 @@ const registeredNames = new Set();
 
 
 export async function reloadCommand(client, commandName) {
-    const command = client.commands.get(commandName);
+    const command = commandRegistry.get(commandName);
     
     if (!command) {
         return { success: false, message: `Command "${commandName}" not found` };
@@ -316,7 +307,7 @@ export async function reloadCommand(client, commandName) {
 
         const newCommand = (await import(moduleUrl.href)).default;
         
-        client.commands.set(commandName, newCommand);
+        commandRegistry.register(newCommand);
         
         logger.info(`Reloaded command: ${commandName}`);
         return { success: true, message: `Successfully reloaded command "${commandName}"` };

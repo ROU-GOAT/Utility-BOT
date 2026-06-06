@@ -88,55 +88,55 @@ export const botConfig = {
   embeds: {
     colors: {
       // Main brand colors.
-      primary: "#336699", 
-      secondary: "#2F3136", 
+      primary: "#0077BE", // Ocean Blue
+      secondary: "#0047AB", // Cobalt
 
       // Standard status colors for success/error/warning/info messages.
-      success: "#57F287", 
-      error: "#ED4245", 
-      warning: "#FEE75C", 
-      info: "#3498DB", 
+      success: "#008080", // Teal
+      error: "#00008B", // Dark Blue
+      warning: "#87CEEB", // Sky Blue
+      info: "#3498DB", // Blue
 
       // Neutral utility colors.
-      light: "#FFFFFF",
-      dark: "#202225",
-      gray: "#99AAB5",
+      light: "#E0F7FA",
+      dark: "#001F3F",
+      gray: "#5F9EA0",
 
       // Discord-style palette shortcuts.
-      blurple: "#5865F2",
-      green: "#57F287",
-      yellow: "#FEE75C",
-      fuchsia: "#EB459E",
-      red: "#ED4245",
+      blurple: "#007BFF",
+      green: "#008080",
+      yellow: "#87CEEB",
+      fuchsia: "#4682B4",
+      red: "#00008B",
       black: "#000000",
 
       // Feature-specific colors.
       giveaway: {
-        active: "#57F287",
-        ended: "#ED4245",
+        active: "#008080",
+        ended: "#00008B",
       },
       ticket: {
-        open: "#57F287",
-        claimed: "#FAA61A",
-        closed: "#ED4245",
-        pending: "#99AAB5",
+        open: "#008080",
+        claimed: "#4682B4",
+        closed: "#00008B",
+        pending: "#5F9EA0",
       },
-      economy: "#F1C40F",
-      birthday: "#E91E63",
-      moderation: "#9B59B6",
+      economy: "#87CEEB",
+      birthday: "#4682B4",
+      moderation: "#0047AB",
 
       // Ticket priority color mapping.
       priority: {
-        none: "#95A5A6",
-        low: "#3498db",
-        medium: "#2ecc71",
-        high: "#f1c40f",
-        urgent: "#e74c3c",
+        none: "#5F9EA0",
+        low: "#3498DB",
+        medium: "#008080",
+        high: "#87CEEB",
+        urgent: "#00008B",
       },
     },
     footer: {
       // Default footer text used in bot embeds.
-      text: "Titan Bot",
+      text: "Aquatic SMP Helper",
       // Footer icon URL (null = no icon).
       icon: null,
     },
